@@ -1,12 +1,8 @@
-const TelegramBot = require('8388235601:AAFF6-QQFvrurlkVQXHbNQy5QPzWE9sPEo0');
+const TelegramBot = require('node-telegram-bot-api');
 
-// جایگزین کردن با توکن جدید و امن شما
-const token = 'YOUR_NEW_BOT_TOKEN';
-
-// ساخت ربات با polling
+const token = '8388235601:AAFF6-QQFvrurlkVQXHbNQy5QPzWE9sPEo0'; // اینجا رشته است
 const bot = new TelegramBot(token, { polling: true });
 
-// لیست مراحل (میتونی متن هر مرحله رو به جای عدد بذاری)
 const steps = [
   "مرحله 1: یک حرف بزرگ انتخاب کن",
   "مرحله 2: یک حرف کوچک انتخاب کن",
@@ -16,7 +12,6 @@ const steps = [
   "مرحله 6: دوباره یک عدد انتخاب کن"
 ];
 
-// ذخیره ترتیب مراحل برای هر کاربر
 let userSteps = {};
 let userIndex = {};
 
@@ -29,11 +24,9 @@ function shuffleArray(array) {
   return arr;
 }
 
-// وقتی کاربر /start می‌زند
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
 
-  // ترتیب مراحل تصادفی
   userSteps[chatId] = shuffleArray(steps);
   userIndex[chatId] = 0;
 
@@ -44,11 +37,9 @@ bot.onText(/\/start/, (msg) => {
     }
   });
 
-  // اولین مرحله رو نشون بده
   bot.sendMessage(chatId, userSteps[chatId][userIndex[chatId]]);
 });
 
-// وقتی کاربر "مرحله بعد" می‌زند
 bot.on('message', (msg) => {
   const chatId = msg.chat.id;
 
@@ -64,7 +55,6 @@ bot.on('message', (msg) => {
         }
       });
 
-      // پاک کردن داده کاربر بعد پایان
       delete userSteps[chatId];
       delete userIndex[chatId];
     }
