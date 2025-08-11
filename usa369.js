@@ -1,26 +1,21 @@
 const TelegramBot = require('node-telegram-bot-api');
 
-// توکن رباتت رو اینجا قرار بده
 const token = '8388235601:AAFF6-QQFvrurlkVQXHbNQy5QPzWE9sPEo0';
 
-// ساخت ربات با Polling
 const bot = new TelegramBot(token, { polling: true });
 
-// مراحل (میتونی این متن‌ها رو تغییر بدی به مراحل واقعی ساخت پسورد)
 const steps = [
-  "🔠 انتخاب یک حرف بزرگ (A-Z)",
-  "🔡 انتخاب یک حرف کوچک (a-z)",
-  "🔢 انتخاب یک عدد",
-  "🔣 انتخاب یک نماد خاص (@, #, $, ...)",
-  "🔠 دوباره یک حرف بزرگ",
-  "🔢 دوباره یک عدد"
+  { text: "🔠 یک حرف بزرگ (A-Z) انتخاب کن", validate: msg => /^[A-Z]$/.test(msg) },
+  { text: "🔡 یک حرف کوچک (a-z) انتخاب کن", validate: msg => /^[a-z]$/.test(msg) },
+  { text: "🔢 یک عدد (0-9) انتخاب کن", validate: msg => /^[0-9]$/.test(msg) },
+  { text: "🔣 یک نماد خاص مثل !@#$%^&* انتخاب کن", validate: msg => /^[!@#$%^&*]$/.test(msg) },
+  { text: "🔠 دوباره یک حرف بزرگ (A-Z) انتخاب کن", validate: msg => /^[A-Z]$/.test(msg) },
+  { text: "🔢 دوباره یک عدد (0-9) انتخاب کن", validate: msg => /^[0-9]$/.test(msg) }
 ];
 
-// ذخیره اطلاعات کاربران
 let userSteps = {};
 let userIndex = {};
 
-// تابع شافل (برای ترتیب تصادفی بدون تکرار)
 function shuffleArray(array) {
   let arr = [...array];
   for (let i = arr.length - 1; i > 0; i--) {
@@ -30,39 +25,41 @@ function shuffleArray(array) {
   return arr;
 }
 
-// شروع ربات
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
-
   userSteps[chatId] = shuffleArray(steps);
   userIndex[chatId] = 0;
 
-  bot.sendMessage(chatId, "🎯 سلام! بیاید با هم یک پسورد قدرتمند بسازیم.\n\nبرای شروع روی «مرحله بعد» بزنید.", {
+  bot.sendMessage(chatId, "🎯 سلام! بیاید یک پسورد قوی بسازیم.\n\nلطفا فقط کاراکتر خواسته شده رو ارسال کن.", {
     reply_markup: {
-      keyboard: [["▶️ مرحله بعد"]],
-      resize_keyboard: true
+      remove_keyboard: true
     }
   });
+
+  // ارسال اولین مرحله
+  bot.sendMessage(chatId, userSteps[chatId][userIndex[chatId]].text);
 });
 
-// پردازش دکمه مرحله بعد
 bot.on('message', (msg) => {
   const chatId = msg.chat.id;
 
-  if (msg.text === "▶️ مرحله بعد" && userSteps[chatId]) {
-    const currentStep = userSteps[chatId][userIndex[chatId]];
-    bot.sendMessage(chatId, `📍 مرحله ${userIndex[chatId] + 1} از ${userSteps[chatId].length}:\n${currentStep}`);
+  // اگر کاربر هنوز مرحله‌ای نداره یا پیامش دستور استارت هست نادیده بگیر
+  if (!userSteps[chatId] || msg.text === '/start') return;
 
+  const currentStep = userSteps[chatId][userIndex[chatId]];
+
+  if (currentStep.validate(msg.text)) {
+    // ورودی درست بود، مرحله بعد
     userIndex[chatId]++;
-
-    if (userIndex[chatId] >= userSteps[chatId].length) {
-      bot.sendMessage(chatId, "✅ همه مراحل تمام شد! پسوردت رو روی کاغذ داری. 💪", {
-        reply_markup: {
-          remove_keyboard: true
-        }
-      });
+    if (userIndex[chatId] < userSteps[chatId].length) {
+      bot.sendMessage(chatId, userSteps[chatId][userIndex[chatId]].text);
+    } else {
+      bot.sendMessage(chatId, "✅ تبریک! همه مراحل انجام شد و پسوردت کامل است. 🎉");
       delete userSteps[chatId];
       delete userIndex[chatId];
     }
+  } else {
+    // ورودی اشتباه بود، پیام خطا بده و مجدد همان مرحله را ارسال کن
+    bot.sendMessage(chatId, `⚠️ ورودی نامعتبر است! لطفا فقط ${currentStep.text} را ارسال کن.`);
   }
 });
