@@ -1,4 +1,4 @@
-const TelegramBot = require('node-telegram-bot-api');
+const TelegramBot = require('8388235601:AAFF6-QQFvrurlkVQXHbNQy5QPzWE9sPEo0');
 
 // جایگزین کردن با توکن جدید و امن شما
 const token = 'YOUR_NEW_BOT_TOKEN';
