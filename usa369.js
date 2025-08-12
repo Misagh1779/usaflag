@@ -35,28 +35,43 @@ function shuffleArray(arr) {
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
 
-  bot.sendAnimation(chatId, gifFileId).then(() => {
+  bot.sendAnimation(chatId, gifFileId).then((sentGif) => {
     bot.sendMessage(chatId, "آیا آماده‌اید برای ساخت یک پسورد ساسانی؟", {
       reply_markup: {
         inline_keyboard: [[{ text: "✅ آماده‌ام", callback_data: "start_steps" }]]
       }
     });
+
+    // ذخیره message_id گیف برای حذف بعدی
+    userSequences[chatId] = { gifMessageId: sentGif.message_id };
   });
 });
 
-bot.on('callback_query', (query) => {
+bot.on('callback_query', async (query) => {
   const chatId = query.message.chat.id;
   const messageId = query.message.message_id;
 
   if (query.data === "start_steps") {
+    // حذف پیام گیف اول
+    if (userSequences[chatId] && userSequences[chatId].gifMessageId) {
+      try {
+        await bot.deleteMessage(chatId, userSequences[chatId].gifMessageId);
+      } catch (e) {
+        // اگر حذف نشد، مشکلی نیست
+      }
+    }
+
+    // انتخاب ۹ مرحله از ۱۳ و ترتیب تصادفی
     const selectedSteps = shuffleArray(allSteps).slice(0, 9);
     const randomOrder = shuffleArray(selectedSteps);
 
+    // ذخیره توابع برای مراحل
     userSequences[chatId] = randomOrder;
     userPositions[chatId] = 0;
 
-    const text = `مرحله 1 از ${randomOrder.length}\n${randomOrder[0]}`;
+    const text = `مرحله 1 از ${randomOrder.length}\n\n${randomOrder[0]}`;
 
+    // ویرایش پیام «آماده ام» به پیام مرحله اول
     bot.editMessageText(text, {
       chat_id: chatId,
       message_id: messageId,
@@ -64,6 +79,9 @@ bot.on('callback_query', (query) => {
         inline_keyboard: [[{ text: "▶️ مرحله بعد", callback_data: "next_step" }]]
       }
     });
+
+    // جواب به callback query برای حذف علامت ساعت در تلگرام
+    bot.answerCallbackQuery(query.id);
   }
   else if (query.data === "next_step") {
     if (!userSequences[chatId]) return;
@@ -73,7 +91,7 @@ bot.on('callback_query', (query) => {
     const sequence = userSequences[chatId];
 
     if (pos < sequence.length) {
-      const text = `مرحله ${pos + 1} از ${sequence.length}\n${sequence[pos]}`;
+      const text = `مرحله ${pos + 1} از ${sequence.length}\n\n${sequence[pos]}`;
       bot.editMessageText(text, {
         chat_id: chatId,
         message_id: messageId,
@@ -90,5 +108,6 @@ bot.on('callback_query', (query) => {
       delete userSequences[chatId];
       delete userPositions[chatId];
     }
+    bot.answerCallbackQuery(query.id);
   }
 });
