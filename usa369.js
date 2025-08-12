@@ -1,5 +1,5 @@
 const TelegramBot = require('node-telegram-bot-api');
-const token = '8388235601:AAFF6-QQFvrurlkVQXHbNQy5QPzWE9sPEo0';  // توکن خودت رو اینجا بذار
+const token = 'YOUR_TELEGRAM_BOT_TOKEN';  // توکن خودت رو اینجا بذار
 const bot = new TelegramBot(token, { polling: true });
 
 // شناسه فایل گیف شروع و پایان
@@ -13,13 +13,13 @@ const allSteps = [
   "🃏 انتخاب یک نماد خاص\nمثال: ! @ # $ % & * ?",
   "💜  یک حرف کوچک",
   "😈  یک عدد",
-  "🐯 انتخاب یک حرف بزرگ دیگر",
-  "🦉 انتخاب یک عدد دیگر",
-  "❄️ انتخاب یک نماد\nمثال: ^ & * ( ) _ - +",
+  "🐯 انتخاب یک حرف بزرگ ",
+  "🦉 انتخاب یک عدد ",
+  "❄️ انتخاب یک نماد \nمثال: ^ & * ( ) _ - +",
   "🗡 انتخاب یک حرف کوچک تصادفی",
   "🕯 انتخاب یک عدد تصادفی",
   "🛡 انتخاب یک حرف بزرگ تصادفی",
-  "🪓 انتخاب یک نماد خاص\nمثال: { } [ ] : ; < >"
+  "🪓 انتخاب یک نماد خاص \nمثال: { } [ ] : ; < >"
 ];
 
 let userSequences = {};
@@ -109,15 +109,13 @@ bot.on('callback_query', async (query) => {
         }
       });
     } else {
-      const summary = sequence.map((s, i) => `${i + 1}. ${s}`).join("\n");
-      await bot.editMessageText(`✅ همه مراحل انجام شد!\n\nمراحل شما:\n${summary}`, {
+      // فقط گیف پایان و پیام
+      await bot.editMessageText('پسووردت آماده س!', {
         chat_id: chatId,
         message_id: messageId
       });
 
-      await bot.sendAnimation(chatId, finishGifFileId, {
-        caption: 'پسووردت آماده س!'
-      });
+      await bot.sendAnimation(chatId, finishGifFileId);
 
       delete userSequences[chatId];
       delete userPositions[chatId];
