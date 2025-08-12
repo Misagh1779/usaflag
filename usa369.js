@@ -2,6 +2,12 @@ const TelegramBot = require('node-telegram-bot-api');
 const token = '8388235601:AAFF6-QQFvrurlkVQXHbNQy5QPzWE9sPEo0';
 const bot = new TelegramBot(token, { polling: true });
 
+bot.on('animation', (msg) => {
+  console.log("GIF File ID:", msg.animation.file_id);
+  bot.sendMessage(msg.chat.id, `🎯 File ID شما:\n${msg.animation.file_id}`);
+});
+
+
 // کل 13 مرحله
 const allSteps = [
   "🐦‍⬛ انتخاب یک حرف کوچک",
