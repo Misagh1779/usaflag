@@ -1,5 +1,5 @@
 const TelegramBot = require('node-telegram-bot-api');
-const token = '8388235601:AAFF6-QQFvrurlkVQXHbNQy5QPzWE9sPEo0'; // توکن خودت رو اینجا بذار
+const token = '8388235601:AAFF6-QQFvrurlkVQXHbNQy5QPzWE9sPEo0';
 const bot = new TelegramBot(token, { polling: true });
 
 const gifFileId = 'CgACAgQAAxkBAAIBD2ibK_3eD8n6og4HewLo5MStAujjAAImGwACse_ZUP7TqlzVH2dbNgQ';
@@ -11,13 +11,13 @@ const allSteps = [
   "🃏 انتخاب یک نماد خاص\nمثال: ! @ # $ % & * ?",
   "💜 دوباره یک حرف کوچک",
   "😈 دوباره یک عدد",
-  "🐦‍⬛ یک حرف بزرگ دیگر",
-  "🔥 یک عدد دیگر",
-  "🌚 یک نماد متفاوت\nمثال: ^ & * ( ) _ - +",
-  "🃏 یک حرف کوچک تصادفی",
-  "💜 یک عدد تصادفی",
-  "😈 یک حرف بزرگ تصادفی",
-  "🐦‍⬛ یک نماد خاص دیگر\nمثال: { } [ ] : ; < >"
+  "🐯 انتخاب یک حرف بزرگ دیگر",
+  "🦉 انتخاب یک عدد دیگر",
+  "❄️ انتخاب یک نماد متفاوت\nمثال: ^ & * ( ) _ - +",
+  "🗡 انتخاب یک حرف کوچک تصادفی",
+  "🕯 انتخاب یک عدد تصادفی",
+  "🛡 انتخاب یک حرف بزرگ تصادفی",
+  "🪓 انتخاب یک نماد خاص دیگر\nمثال: { } [ ] : ; < >"
 ];
 
 let userSequences = {};
@@ -35,10 +35,12 @@ function shuffleArray(arr) {
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
 
-  bot.sendAnimation(chatId, gifFileId, {
-    reply_markup: {
-      inline_keyboard: [[{ text: "✅ آماده‌ام", callback_data: "start_steps" }]]
-    }
+  bot.sendAnimation(chatId, gifFileId).then(() => {
+    bot.sendMessage(chatId, "آیا آماده‌اید برای ساخت یک پسورد ساسانی؟", {
+      reply_markup: {
+        inline_keyboard: [[{ text: "✅ آماده‌ام", callback_data: "start_steps" }]]
+      }
+    });
   });
 });
 
@@ -47,7 +49,6 @@ bot.on('callback_query', (query) => {
   const messageId = query.message.message_id;
 
   if (query.data === "start_steps") {
-    // انتخاب ۹ مرحله از ۱۳ تا و ترتیب تصادفی
     const selectedSteps = shuffleArray(allSteps).slice(0, 9);
     const randomOrder = shuffleArray(selectedSteps);
 
@@ -56,12 +57,7 @@ bot.on('callback_query', (query) => {
 
     const text = `مرحله 1 از ${randomOrder.length}\n${randomOrder[0]}`;
 
-    bot.editMessageMedia({
-      type: 'animation',
-      media: gifFileId,
-      caption: text,
-      parse_mode: 'Markdown'
-    }, {
+    bot.editMessageText(text, {
       chat_id: chatId,
       message_id: messageId,
       reply_markup: {
@@ -78,7 +74,7 @@ bot.on('callback_query', (query) => {
 
     if (pos < sequence.length) {
       const text = `مرحله ${pos + 1} از ${sequence.length}\n${sequence[pos]}`;
-      bot.editMessageCaption(text, {
+      bot.editMessageText(text, {
         chat_id: chatId,
         message_id: messageId,
         reply_markup: {
@@ -87,7 +83,7 @@ bot.on('callback_query', (query) => {
       });
     } else {
       const summary = sequence.map((s, i) => `${i + 1}. ${s}`).join("\n");
-      bot.editMessageCaption(`✅ همه مراحل انجام شد!\n\nمراحل شما:\n${summary}`, {
+      bot.editMessageText(`✅ همه مراحل انجام شد!\n\nمراحل شما:\n${summary}`, {
         chat_id: chatId,
         message_id: messageId
       });
