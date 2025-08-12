@@ -3,14 +3,21 @@ const TelegramBot = require('node-telegram-bot-api');
 const token = '8388235601:AAFF6-QQFvrurlkVQXHbNQy5QPzWE9sPEo0';
 const bot = new TelegramBot(token, { polling: true });
 
-// مراحل با سوال و ایموجی‌های اختصاصی تو
-const steps = [
+// کل 13 مرحله با ایموجی‌ها
+const allSteps = [
   "انتخاب یک حرف کوچک 🐦‍⬛",
   "انتخاب یک حرف بزرگ 🔥",
   "انتخاب یک عدد 🌚",
   "انتخاب یک نماد خاص 🃏",
-  "انتخاب یک حرف کوچک 💜",
-  "انتخاب یک عدد 😈"
+  "دوباره یک حرف کوچک 💜",
+  "دوباره یک عدد 😈",
+  "یک حرف بزرگ دیگر 🐦‍⬛",
+  "یک عدد دیگر 🔥",
+  "یک نماد متفاوت 🌚",
+  "یک حرف کوچک تصادفی 🃏",
+  "یک عدد تصادفی 💜",
+  "یک حرف بزرگ تصادفی 😈",
+  "یک نماد خاص دیگر 🐦‍⬛"
 ];
 
 let userSequences = {};
@@ -28,19 +35,23 @@ function shuffleArray(arr) {
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
 
-  const sequence = shuffleArray([0,1,2,3,4,5]);
+  // اول 9 مرحله از بین 13 تا انتخاب می‌کنیم
+  const selectedSteps = shuffleArray(allSteps).slice(0, 9);
 
-  userSequences[chatId] = sequence;
+  // حالا ترتیب همین 9 مرحله رو هم به هم می‌ریزیم
+  const randomOrder = shuffleArray(selectedSteps);
+
+  userSequences[chatId] = randomOrder;
   userPositions[chatId] = 0;
 
-  bot.sendMessage(chatId, "🚀 سلام! برای ساخت پسورد، هر بار روی «مرحله بعد» بزن و سوال رو انجام بده.", {
+  bot.sendMessage(chatId, "🚀 سلام! برای ساخت پسورد، روی «مرحله بعد» بزن و کار رو انجام بده.", {
     reply_markup: {
       keyboard: [["▶️ مرحله بعد"]],
       resize_keyboard: true
     }
   });
 
-  bot.sendMessage(chatId, steps[sequence[0]]);
+  bot.sendMessage(chatId, randomOrder[0]);
 });
 
 bot.on('message', (msg) => {
@@ -54,9 +65,9 @@ bot.on('message', (msg) => {
     const sequence = userSequences[chatId];
 
     if (pos < sequence.length) {
-      bot.sendMessage(chatId, steps[sequence[pos]]);
+      bot.sendMessage(chatId, sequence[pos]);
     } else {
-      bot.sendMessage(chatId, "✅ تبریک! همه مراحل تمام شد. پسوردت رو روی کاغذ داری. 🎉", {
+      bot.sendMessage(chatId, "✅ همه مراحل انجام شد. پسوردت رو کامل کردی! 🎉", {
         reply_markup: { remove_keyboard: true }
       });
       delete userSequences[chatId];
