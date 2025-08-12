@@ -1,5 +1,5 @@
 const TelegramBot = require('node-telegram-bot-api');
-const token = 'YOUR_TELEGRAM_BOT_TOKEN';  // توکن خودت رو اینجا بذار
+const token = '8388235601:AAFF6-QQFvrurlkVQXHbNQy5QPzWE9sPEo0';  // توکن خودت رو اینجا بذار
 const bot = new TelegramBot(token, { polling: true });
 
 // شناسه فایل گیف شروع و پایان
