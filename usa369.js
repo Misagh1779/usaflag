@@ -1,10 +1,9 @@
 const TelegramBot = require('node-telegram-bot-api');
-const token = '8388235601:AAFF6-QQFvrurlkVQXHbNQy5QPzWE9sPEo0';  // توکن بات رو اینجا بذار
+const token = '8388235601:AAFF6-QQFvrurlkVQXHbNQy5QPzWE9sPEo0';  // توکن خودت رو اینجا بذار
 const bot = new TelegramBot(token, { polling: true });
 
-// شناسه فایل گیف شروع
+// شناسه فایل گیف شروع و پایان
 const startGifFileId = 'CgACAgQAAxkBAAIBD2ibK_3eD8n6og4HewLo5MStAujjAAImGwACse_ZUP7TqlzVH2dbNgQ';
-// شناسه فایل گیف پایان (اینو جایگزین کردیم)
 const finishGifFileId = 'CgACAgQAAxkBAAIBHWibMMJY7i_g3siwwcBcpss0HzhWAAIVFgACGP_ZUJ1D8jIOb8gxNgQ';
 
 const allSteps = [
@@ -12,15 +11,15 @@ const allSteps = [
   "🔥 انتخاب یک حرف بزرگ",
   "🌚 انتخاب یک عدد",
   "🃏 انتخاب یک نماد خاص\nمثال: ! @ # $ % & * ?",
-  "💜 دوباره یک حرف کوچک",
-  "😈 دوباره یک عدد",
+  "💜  یک حرف کوچک",
+  "😈  یک عدد",
   "🐯 انتخاب یک حرف بزرگ دیگر",
   "🦉 انتخاب یک عدد دیگر",
-  "❄️ انتخاب یک نماد متفاوت\nمثال: ^ & * ( ) _ - +",
+  "❄️ انتخاب یک نماد\nمثال: ^ & * ( ) _ - +",
   "🗡 انتخاب یک حرف کوچک تصادفی",
   "🕯 انتخاب یک عدد تصادفی",
   "🛡 انتخاب یک حرف بزرگ تصادفی",
-  "🪓 انتخاب یک نماد خاص دیگر\nمثال: { } [ ] : ; < >"
+  "🪓 انتخاب یک نماد خاص\nمثال: { } [ ] : ; < >"
 ];
 
 let userSequences = {};
@@ -54,10 +53,19 @@ bot.on('callback_query', async (query) => {
   const messageId = query.message.message_id;
 
   if (query.data === "start_steps") {
-    // پیام یادآوری
-    await bot.sendMessage(chatId, "روی کاغذ یادداشت کن. یادت نره!");
+    // پیام یادآوری با دکمه اوکی
+    await bot.editMessageText("روی کاغذ یادداشت کن. یادت نره!", {
+      chat_id: chatId,
+      message_id: messageId,
+      reply_markup: {
+        inline_keyboard: [[{ text: "اوکی", callback_data: "start_process" }]]
+      }
+    });
 
-    // حذف پیام گیف شروع
+    bot.answerCallbackQuery(query.id);
+  }
+  else if (query.data === "start_process") {
+    // حذف پیام گیف شروع اگر وجود دارد
     if (userSequences[chatId] && userSequences[chatId].gifMessageId) {
       try {
         await bot.deleteMessage(chatId, userSequences[chatId].gifMessageId);
@@ -73,7 +81,7 @@ bot.on('callback_query', async (query) => {
 
     const text = `مرحله 1 از ${randomOrder.length}\n\n${randomOrder[0]}`;
 
-    // ویرایش پیام آماده‌ام به مرحله اول
+    // نمایش اولین مرحله
     await bot.editMessageText(text, {
       chat_id: chatId,
       message_id: messageId,
