@@ -1,14 +1,11 @@
 const TelegramBot = require('node-telegram-bot-api');
-const token = '8388235601:AAFF6-QQFvrurlkVQXHbNQy5QPzWE9sPEo0';
+const token = '8388235601:AAFF6-QQFvrurlkVQXHbNQy5QPzWE9sPEo0';  // توکن بات رو اینجا بذار
 const bot = new TelegramBot(token, { polling: true });
 
-bot.on('animation', (msg) => {
-  console.log("GIF File ID:", msg.animation.file_id);
-  bot.sendMessage(msg.chat.id, `🎯 File ID شما:\n${msg.animation.file_id}`);
-});
-
-
-const gifFileId = 'CgACAgQAAxkBAAIBD2ibK_3eD8n6og4HewLo5MStAujjAAImGwACse_ZUP7TqlzVH2dbNgQ';
+// شناسه فایل گیف شروع
+const startGifFileId = 'CgACAgQAAxkBAAIBD2ibK_3eD8n6og4HewLo5MStAujjAAImGwACse_ZUP7TqlzVH2dbNgQ';
+// شناسه فایل گیف پایان (اینو جایگزین کردیم)
+const finishGifFileId = 'CgACAgQAAxkBAAIBHWibMMJY7i_g3siwwcBcpss0HzhWAAIVFgACGP_ZUJ1D8jIOb8gxNgQ';
 
 const allSteps = [
   "🐦‍⬛ انتخاب یک حرف کوچک",
@@ -41,14 +38,13 @@ function shuffleArray(arr) {
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
 
-  bot.sendAnimation(chatId, gifFileId).then((sentGif) => {
+  bot.sendAnimation(chatId, startGifFileId).then((sentGif) => {
     bot.sendMessage(chatId, "آیا آماده‌اید برای ساخت یک پسورد ساسانی؟", {
       reply_markup: {
         inline_keyboard: [[{ text: "✅ آماده‌ام", callback_data: "start_steps" }]]
       }
     });
 
-    // ذخیره message_id گیف برای حذف بعدی
     userSequences[chatId] = { gifMessageId: sentGif.message_id };
   });
 });
@@ -58,27 +54,27 @@ bot.on('callback_query', async (query) => {
   const messageId = query.message.message_id;
 
   if (query.data === "start_steps") {
-    // حذف پیام گیف اول
+    // پیام یادآوری
+    await bot.sendMessage(chatId, "روی کاغذ یادداشت کن. یادت نره!");
+
+    // حذف پیام گیف شروع
     if (userSequences[chatId] && userSequences[chatId].gifMessageId) {
       try {
         await bot.deleteMessage(chatId, userSequences[chatId].gifMessageId);
-      } catch (e) {
-        // اگر حذف نشد، مشکلی نیست
-      }
+      } catch (e) {}
     }
 
-    // انتخاب ۹ مرحله از ۱۳ و ترتیب تصادفی
+    // انتخاب ۹ مرحله رندوم از ۱۳ مرحله
     const selectedSteps = shuffleArray(allSteps).slice(0, 9);
     const randomOrder = shuffleArray(selectedSteps);
 
-    // ذخیره توابع برای مراحل
     userSequences[chatId] = randomOrder;
     userPositions[chatId] = 0;
 
     const text = `مرحله 1 از ${randomOrder.length}\n\n${randomOrder[0]}`;
 
-    // ویرایش پیام «آماده ام» به پیام مرحله اول
-    bot.editMessageText(text, {
+    // ویرایش پیام آماده‌ام به مرحله اول
+    await bot.editMessageText(text, {
       chat_id: chatId,
       message_id: messageId,
       reply_markup: {
@@ -86,7 +82,6 @@ bot.on('callback_query', async (query) => {
       }
     });
 
-    // جواب به callback query برای حذف علامت ساعت در تلگرام
     bot.answerCallbackQuery(query.id);
   }
   else if (query.data === "next_step") {
@@ -98,7 +93,7 @@ bot.on('callback_query', async (query) => {
 
     if (pos < sequence.length) {
       const text = `مرحله ${pos + 1} از ${sequence.length}\n\n${sequence[pos]}`;
-      bot.editMessageText(text, {
+      await bot.editMessageText(text, {
         chat_id: chatId,
         message_id: messageId,
         reply_markup: {
@@ -107,10 +102,15 @@ bot.on('callback_query', async (query) => {
       });
     } else {
       const summary = sequence.map((s, i) => `${i + 1}. ${s}`).join("\n");
-      bot.editMessageText(`✅ همه مراحل انجام شد!\n\nمراحل شما:\n${summary}`, {
+      await bot.editMessageText(`✅ همه مراحل انجام شد!\n\nمراحل شما:\n${summary}`, {
         chat_id: chatId,
         message_id: messageId
       });
+
+      await bot.sendAnimation(chatId, finishGifFileId, {
+        caption: 'پسووردت آماده س!'
+      });
+
       delete userSequences[chatId];
       delete userPositions[chatId];
     }
