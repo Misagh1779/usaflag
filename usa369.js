@@ -1,5 +1,5 @@
 const TelegramBot = require('node-telegram-bot-api');
-const token = 'YOUR_BOT_TOKEN_HERE'; // توکن خودت
+const token = '8388235601:AAFF6-QQFvrurlkVQXHbNQy5QPzWE9sPEo0'; // توکن خودت
 const bot = new TelegramBot(token, { polling: true });
 
 // گیف‌ها
