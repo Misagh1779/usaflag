@@ -14,13 +14,13 @@ const allSteps = [
   { text: "با اضافه کردن یک عدد جمع اعداد درون پسورد را به مضربی از 3 تبدیل کنید" },
   { text: "اسم یکی از کشور های درون لیست را به صورت کامل با یک ترتیب دلخواه از حروف کوچک و بزرگ به همراه یک عدد به پسورد اضافه کنید\nسپس\nحرف اول و آخر یک کشور دیگر را به اول و آخر پسورد اضافه کنید", photo: 'AgACAgQAAxkBAAIBXWidtdz6A16L9SFxXJy3Pjwa9p9EAAJ6zTEbWbjpUOh7qkbyIC-hAQADAgADeQADNgQ' },
   { text: "یکی از حروف صدادار را انتخاب و از پسورد حذف کنید، سپس یکی از حروف صدادار را انتخاب و به 3 جای مختلف از پسورد اضافه کنید",
-  photo: 'AgACAgQAAxkBAAIBX2idth7jxnX9F_fLLajvxi2zpWp-AAJ7zTEbWbjpUGECtz-GrXJzAQADAgADeAADNgQ'},
+    photo: 'AgACAgQAAxkBAAIBX2idth7jxnX9F_fLLajvxi2zpWp-AAJ7zTEbWbjpUGECtz-GrXJzAQADAgADeAADNgQ'
+  },
   { text: "یکی از حروف صدا دار را انتخاب و با یکی از اعداد 0 تا 9 جایگزین کنید\n\nیکی از حروف بیصدا را انتخاب و با یکی از کاراکتر های ( @ # _ & ! ? ) جایگزین کنید",
     photo: 'AgACAgQAAxkBAAIBX2idth7jxnX9F_fLLajvxi2zpWp-AAJ7zTEbWbjpUGECtz-GrXJzAQADAgADeAADNgQ'
   }, 
   { text: "یکی از اعداد ( 13  ،  14  ،  15  ،  16 ) را انتخاب و به تعداد آن از کاراکتر های پسورد جدا کنید" }
 ];
-
 
 let userSequences = {};
 let userPositions = {};
@@ -68,8 +68,13 @@ bot.on('callback_query', async (query) => {
       try { await bot.deleteMessage(chatId, userSequences[chatId].gifMessageId); } catch (e) {}
     }
 
-    const selectedSteps = shuffleArray(allSteps).slice(0, 9);
-    const randomOrder = shuffleArray(selectedSteps);
+    // حذف پیام "روی کاغذ یادداشت کن"
+    try { await bot.deleteMessage(chatId, messageId); } catch (e) {}
+
+    // مرحله ثابت همیشه اول
+    const firstStep = allSteps[0];
+    const otherSteps = shuffleArray(allSteps.slice(1)).slice(0, 8); // 8 مرحله بعدی
+    const randomOrder = [firstStep, ...otherSteps];
 
     userSequences[chatId] = randomOrder;
     userPositions[chatId] = 0;
@@ -78,11 +83,7 @@ bot.on('callback_query', async (query) => {
     if (step.photo) {
       await bot.sendPhoto(chatId, step.photo, { caption: `مرحله 1 از ${randomOrder.length}\n\n${step.text}`, reply_markup: { inline_keyboard: [[{ text: "▶️ مرحله بعد", callback_data: "next_step" }]] }});
     } else {
-      await bot.editMessageText(`مرحله 1 از ${randomOrder.length}\n\n${step.text}`, {
-        chat_id: chatId,
-        message_id: messageId,
-        reply_markup: { inline_keyboard: [[{ text: "▶️ مرحله بعد", callback_data: "next_step" }]] }
-      });
+      await bot.sendMessage(chatId, `مرحله 1 از ${randomOrder.length}\n\n${step.text}`, { reply_markup: { inline_keyboard: [[{ text: "▶️ مرحله بعد", callback_data: "next_step" }]] }});
     }
 
     bot.answerCallbackQuery(query.id);
