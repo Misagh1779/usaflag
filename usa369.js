@@ -6,19 +6,16 @@ const bot = new TelegramBot(token, { polling: true });
 const startGifFileId = 'CgACAgQAAxkBAAIBD2ibK_3eD8n6og4HewLo5MStAujjAAImGwACse_ZUP7TqlzVH2dbNgQ';
 const finishGifFileId = 'CgACAgQAAxkBAAIBHWibMMJY7i_g3siwwcBcpss0HzhWAAIVFgACGP_ZUJ1D8jIOb8gxNgQ';
 
-// مراحل
+// مراحل با ایموجی و عکس (متن فقط پشت‌صحنه)
 const allSteps = [
-  { text: "یک پسورد 8 کاراکتری با حداقل یک اعداد ، حروف کوچک و بزرگ انگلیسی (Az) و حداقل یکی از کاراکتر های (( @ # - & / _ )) بسازید" },
-  { text: "یکی از اعداد بالا را انتخاب کنید و نماد رومی آن را به پسورد اضافه کنید", photo: 'AgACAgQAAxkBAAIBWWidtX4NNgvAR3bFbirNyd4-yte0AAJ4zTEbWbjpUKk6g4HoqUIMAQADAgADeQADNgQ' },
-  { text: "یکی از عناصر دو حرفی جدول مندلیف را به پسورد اضافه کنید", photo: 'AgACAgQAAxkBAAIBW2idta-YdpZTOMG-dG1OlGXqrHHXAAJ5zTEbWbjpUJ7MUf9RAzayAQADAgADeAADNgQ' },
-  { text: "با اضافه کردن یک عدد جمع اعداد درون پسورد را به مضربی از 3 تبدیل کنید" },
-  { text: "اسم یکی از کشور های درون لیست را به صورت کامل با یک ترتیب دلخواه از حروف کوچک و بزرگ به همراه یک عدد به پسورد اضافه کنید\nسپس\nحرف اول و آخر یک کشور دیگر را به اول و آخر پسورد اضافه کنید", photo: 'AgACAgQAAxkBAAIBXWidtdz6A16L9SFxXJy3Pjwa9p9EAAJ6zTEbWbjpUOh7qkbyIC-hAQADAgADeQADNgQ' },
-  { text: "یکی از حروف صدادار را انتخاب و از پسورد حذف کنید، سپس یکی از حروف صدادار را انتخاب و به 3 جای مختلف از پسورد اضافه کنید",
-    photo: 'AgACAgQAAxkBAAIBX2idth7jxnX9F_fLLajvxi2zpWp-AAJ7zTEbWbjpUGECtz-GrXJzAQADAgADeAADNgQ'},
-  { text: "یکی از حروف صدا دار را انتخاب و با یکی از اعداد 0 تا 9 جایگزین کنید\n\nیکی از حروف بیصدا را انتخاب و با یکی از کاراکتر های ( @ # _ & ! ? ) جایگزین کنید",
-    photo: 'AgACAgQAAxkBAAIBX2idth7jxnX9F_fLLajvxi2zpWp-AAJ7zTEbWbjpUGECtz-GrXJzAQADAgADeAADNgQ'
-  }, 
-  { text: "یکی از اعداد ( 13  ،  14  ،  15  ،  16 ) را انتخاب و به تعداد آن از کاراکتر های پسورد جدا کنید" }
+  { text: "یک پسورد 8 کاراکتری ...", emoji: "🛡" },
+  { text: "یکی از اعداد بالا را انتخاب کنید ...", emoji: "🪓", photo: 'AgACAgQAAxkBAAIBWWidtX4NNgvAR3bFbirNyd4-yte0AAJ4zTEbWbjpUKk6g4HoqUIMAQADAgADeQADNgQ' },
+  { text: "یکی از عناصر دو حرفی جدول مندلیف ...", emoji: "🐦‍⬛", photo: 'AgACAgQAAxkBAAIBW2idta-YdpZTOMG-dG1OlGXqrHHXAAJ5zTEbWbjpUJ7MUf9RAzayAQADAgADeAADNgQ' },
+  { text: "با اضافه کردن یک عدد جمع اعداد ...", emoji: "🔥" },
+  { text: "اسم یکی از کشورها ...", emoji: "🌚", photo: 'AgACAgQAAxkBAAIBXWidtdz6A16L9SFxXJy3Pjwa9p9EAAJ6zTEbWbjpUOh7qkbyIC-hAQADAgADeQADNgQ' },
+  { text: "یکی از حروف صدادار را حذف و ...", emoji: "🃏", photo: 'AgACAgQAAxkBAAIBX2idth7jxnX9F_fLLajvxi2zpWp-AAJ7zTEbWbjpUGECtz-GrXJzAQADAgADeAADNgQ' },
+  { text: "یکی از حروف صدادار و بیصدا را جایگزین ...", emoji: "💜", photo: 'AgACAgQAAxkBAAIBX2idth7jxnX9F_fLLajvxi2zpWp-AAJ7zTEbWbjpUGECtz-GrXJzAQADAgADeAADNgQ' },
+  { text: "یکی از اعداد (13,14,15,16) ...", emoji: "😈" }
 ];
 
 let userSequences = {};
@@ -62,7 +59,7 @@ bot.on('callback_query', async (query) => {
     bot.answerCallbackQuery(query.id);
   }
   else if (query.data === "start_process") {
-    // حذف پیام یادداشت روی کاغذ
+    // حذف پیام "روی کاغذ یادداشت کن"
     try { await bot.deleteMessage(chatId, messageId); } catch (e) {}
 
     // حذف گیف شروع
@@ -70,30 +67,20 @@ bot.on('callback_query', async (query) => {
       try { await bot.deleteMessage(chatId, userSequences[chatId].gifMessageId); } catch (e) {}
     }
 
-    // مرحله اول و آخر همیشه ثابت
+    // مرحله اول همیشه ثابت
     const firstStep = allSteps[0];
+    const middleSteps = shuffleArray(allSteps.slice(1, allSteps.length - 1));
     const lastStep = allSteps[allSteps.length - 1];
-    const middleSteps = allSteps.slice(1, allSteps.length - 1);
 
-    // انتخاب 7 مرحله تصادفی از مراحل میانی
-    const selectedMiddle = shuffleArray(middleSteps).slice(0, 7);
-
-    // ترتیب نهایی مراحل
-    const finalSteps = [firstStep, ...selectedMiddle, lastStep];
-    userSequences[chatId] = finalSteps;
+    const sequence = [firstStep, ...middleSteps, lastStep];
+    userSequences[chatId] = sequence;
     userPositions[chatId] = 0;
 
-    // شروع با مرحله اول
-    const step = finalSteps[0];
+    const step = sequence[0];
     if (step.photo) {
-      await bot.sendPhoto(chatId, step.photo, {
-        caption: `مرحله 1 از ${finalSteps.length}\n\n${step.text}`,
-        reply_markup: { inline_keyboard: [[{ text: "▶️ مرحله بعد", callback_data: "next_step" }]] }
-      });
+      await bot.sendPhoto(chatId, step.photo, { caption: `مرحله 1 از ${sequence.length}\n\n${step.emoji}`, reply_markup: { inline_keyboard: [[{ text: "▶️ مرحله بعد", callback_data: "next_step" }]] }});
     } else {
-      await bot.sendMessage(chatId, `مرحله 1 از ${finalSteps.length}\n\n${step.text}`, {
-        reply_markup: { inline_keyboard: [[{ text: "▶️ مرحله بعد", callback_data: "next_step" }]] }
-      });
+      await bot.sendMessage(chatId, `مرحله 1 از ${sequence.length}\n\n${step.emoji}`, { reply_markup: { inline_keyboard: [[{ text: "▶️ مرحله بعد", callback_data: "next_step" }]] }});
     }
 
     bot.answerCallbackQuery(query.id);
@@ -107,20 +94,13 @@ bot.on('callback_query', async (query) => {
 
     if (pos < sequence.length) {
       const step = sequence[pos];
-      // حذف پیام قبلی
       try { await bot.deleteMessage(chatId, messageId); } catch (e) {}
       if (step.photo) {
-        await bot.sendPhoto(chatId, step.photo, {
-          caption: `مرحله ${pos + 1} از ${sequence.length}\n\n${step.text}`,
-          reply_markup: { inline_keyboard: [[{ text: "▶️ مرحله بعد", callback_data: "next_step" }]] }
-        });
+        await bot.sendPhoto(chatId, step.photo, { caption: `مرحله ${pos + 1} از ${sequence.length}\n\n${step.emoji}`, reply_markup: { inline_keyboard: [[{ text: "▶️ مرحله بعد", callback_data: "next_step" }]] }});
       } else {
-        await bot.sendMessage(chatId, `مرحله ${pos + 1} از ${sequence.length}\n\n${step.text}`, {
-          reply_markup: { inline_keyboard: [[{ text: "▶️ مرحله بعد", callback_data: "next_step" }]] }
-        });
+        await bot.sendMessage(chatId, `مرحله ${pos + 1} از ${sequence.length}\n\n${step.emoji}`, { reply_markup: { inline_keyboard: [[{ text: "▶️ مرحله بعد", callback_data: "next_step" }]] }});
       }
     } else {
-      // مرحله آخر، فقط گیف پایان
       await bot.sendAnimation(chatId, finishGifFileId, { caption: "پسووردت آماده س!" });
       delete userSequences[chatId];
       delete userPositions[chatId];
