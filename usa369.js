@@ -2,6 +2,16 @@ const TelegramBot = require('node-telegram-bot-api');
 const token = '8388235601:AAFF6-QQFvrurlkVQXHbNQy5QPzWE9sPEo0';  // توکن خودت رو اینجا بذار
 const bot = new TelegramBot(token, { polling: true });
 
+bot.on('photo', (msg) => {
+  const chatId = msg.chat.id;
+  // بالاترین کیفیت عکس آخرین عضو آرایه است
+  const fileId = msg.photo[msg.photo.length - 1].file_id;
+  console.log('File ID:', fileId);
+  bot.sendMessage(chatId, `📷 File ID: \`${fileId}\``, { parse_mode: 'Markdown' });
+});
+
+
+
 // شناسه فایل گیف شروع و پایان
 const startGifFileId = 'CgACAgQAAxkBAAIBD2ibK_3eD8n6og4HewLo5MStAujjAAImGwACse_ZUP7TqlzVH2dbNgQ';
 const finishGifFileId = 'CgACAgQAAxkBAAIBHWibMMJY7i_g3siwwcBcpss0HzhWAAIVFgACGP_ZUJ1D8jIOb8gxNgQ';
