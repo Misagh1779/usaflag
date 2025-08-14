@@ -13,10 +13,10 @@ const allSteps = [
   { text: "یکی از عناصر دو حرفی جدول مندلیف را به پسورد اضافه کنید", photo: 'AgACAgQAAxkBAAIBW2idta-YdpZTOMG-dG1OlGXqrHHXAAJ5zTEbWbjpUJ7MUf9RAzayAQADAgADeAADNgQ' },
   { text: "با اضافه کردن یک عدد جمع اعداد درون پسورد را به مضربی از 3 تبدیل کنید" },
   { text: "اسم یکی از کشور های درون لیست را به صورت کامل با یک ترتیب دلخواه از حروف کوچک و بزرگ به همراه یک عدد به پسورد اضافه کنید\nسپس\nحرف اول و آخر یک کشور دیگر را به اول و آخر پسورد اضافه کنید", photo: 'AgACAgQAAxkBAAIBXWidtdz6A16L9SFxXJy3Pjwa9p9EAAJ6zTEbWbjpUOh7qkbyIC-hAQADAgADeQADNgQ' },
-  { text: "یکی از حروف صدادار را انتخاب و از پسورد حذف کنید" },
-  { text: "یکی از حروف صدا دار را انتخاب و به 3 جای مختلف از پسورد اضافه کنید", photo: 'AgACAgQAAxkBAAIBX2idth7jxnX9F_fLLajvxi2zpWp-AAJ7zTEbWbjpUGECtz-GrXJzAQADAgADeAADNgQ' },
-  { 
-    text: "یکی از حروف صدا دار را انتخاب و با یکی از اعداد 0 تا 9 جایگزین کنید\n\nیکی از حروف بیصدا را انتخاب و با یکی از کاراکتر های ( @ # _ & ! ? ) جایگزین کنید",
+ {
+  text: "یکی از حروف صدادار را انتخاب و از پسورد حذف کنید، سپس یکی از حروف صدادار را انتخاب و به 3 جای مختلف از پسورد اضافه کنید",
+  photo: 'AgACAgQAAxkBAAIBX2idth7jxnX9F_fLLajvxi2zpWp-AAJ7zTEbWbjpUGECtz-GrXJzAQADAgADeAADNgQ'}
+  { text: "یکی از حروف صدا دار را انتخاب و با یکی از اعداد 0 تا 9 جایگزین کنید\n\nیکی از حروف بیصدا را انتخاب و با یکی از کاراکتر های ( @ # _ & ! ? ) جایگزین کنید",
     photo: 'AgACAgQAAxkBAAIBX2idth7jxnX9F_fLLajvxi2zpWp-AAJ7zTEbWbjpUGECtz-GrXJzAQADAgADeAADNgQ'
   }, 
   { text: "یکی از اعداد ( 13  ،  14  ،  15  ،  16 ) را انتخاب و به تعداد آن از کاراکتر های پسورد جدا کنید" }
